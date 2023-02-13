@@ -3,6 +3,8 @@ const { createTempFolder } = require('./autotempfolder')
 const path = require('path')
 const os = require('os');
 const mkdirp = require('mkdirp');
+const { CONFIG_PATH } = require('./config')
+const fs = require('fs')
 
 const questions = [
   {
@@ -30,15 +32,12 @@ const makeQuestion = async () => {
 }
 
 async function main() {
-  const PATH = path.join(process.env.HOME, '.cdtmp/config.json')
   // 判断在~/.cdtmp/config.json是否有这个文件
   const hasConfigFile = () => {
-    const fs = require('fs')
-    const configPath = PATH;
-    return fs.existsSync(configPath)
+    return fs.existsSync(CONFIG_PATH)
   }
 
-  const generateConfigFile = ({cacheTime,isDirecotryReboot,directory}) => {
+  const generateConfigFile = ({ cacheTime, isDirecotryReboot, directory }) => {
     const fs = require('fs')
     const configPath = PATH;
     const config = {
@@ -51,10 +50,13 @@ async function main() {
   }
 
   const hasConfig = hasConfigFile()
-  if(!hasConfig) {
+  console.log(hasConfig)
+  if (!hasConfig) {
     // 创建文件
     const answer = await makeQuestion()
     generateConfigFile(answer)
+  } else {
+    createTempFolder()
   }
 }
 
